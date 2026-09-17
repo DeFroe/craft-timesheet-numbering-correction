@@ -8,34 +8,34 @@ Triggered from SKILL.md Step 0 when no config file exists yet at
 Ask in two batches: a bundled multiple-choice batch first (via the question tool, all in one
 call), then free-text follow-ups depending on the answers.
 
-**Batch 1 — bundled choice questions:**
+**Batch 1 - bundled choice questions:**
 
 1. Do you need a **second, internal-only** numbering sequence in addition to the main document
    number? (e.g. to separately count how many originals came from a specific subcontractor,
    without that count ever appearing on a document). Yes / No.
 2. Which timesheet template do you want to use: the **bundled example** template
    (`assets/timesheet-template.xlsx`) or **your own** existing spreadsheet?
-3. Which break-time rule do you want: the **bundled example preset** (a simple three-tier rule —
+3. Which break-time rule do you want: the **bundled example preset** (a simple three-tier rule -
    shown to the user for review before accepting) or **your own thresholds**?
 
-**Batch 2 — free text, based on Batch 1 answers:**
+**Batch 2 - free text, based on Batch 1 answers:**
 
 - Base folder: the root path under which all project folders live.
 - Naming pattern for the per-project tracking file (e.g. `Tracking_{project}.xlsx`). Ask whether
   any characters in project names need replacing for the filename (e.g. a comma becoming an
   underscore) and record the rule if so.
 - Labels for the two parties that appear on a timesheet (e.g. "Client" / "Subcontractor", or
-  whatever terms the user's business actually uses — this becomes `party_a_label` /
+  whatever terms the user's business actually uses - this becomes `party_a_label` /
   `party_b_label`). Also ask what should appear in the party-B field for work done by the user's
   own staff rather than a subcontractor (default suggestion: `"internal"`).
 - If "own template" was chosen: ask for its path, then open it read-only with openpyxl, scan
   column A/B (or the first non-empty column) for label-like text near the top, and propose a
-  `template_mapping` (see schema below) for confirmation/correction — don't guess coordinates
+  `template_mapping` (see schema below) for confirmation/correction - don't guess coordinates
   blindly. If the file is currently open elsewhere, reading it may still work (openpyxl only
   needs write access when saving), but writing to it later will need it closed first.
 - If "own thresholds" was chosen: ask for the hour boundaries and corresponding break lengths,
   as a list from lowest to highest. Confirm the boundary is treated as an **exclusive** upper
-  bound on each tier (i.e. "up to but not including this many hours") — this is deliberate: it
+  bound on each tier (i.e. "up to but not including this many hours") - this is deliberate: it
   avoids an off-by-one at exact boundary values, which is a real mistake this skill's design
   history is based on.
 - Filename pattern for generated documents, with placeholders `{party}`, `{project}`,
@@ -76,5 +76,5 @@ See `config.example.json` in the skill root for a filled-out example. Fields:
 ## Re-running setup
 
 If the user says something like "reset setup" or "reconfigure", re-run the full interview and
-overwrite the existing config file after confirmation — don't merge silently with old values
+overwrite the existing config file after confirmation - don't merge silently with old values
 unless the user asks to keep some of them.

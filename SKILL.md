@@ -1,6 +1,6 @@
 ---
 name: craft-timesheet-numbering-correction
-description: Tracks the next free running document number for a project (two independent sequences — a primary number used on documents, and an optional secondary number for internal-only counting), and processes photographed/scanned handwritten timesheets — computes worked hours, applies a configurable break-time rule, compares against the entered values, produces a red-annotated correction copy for mismatches, and generates a clean digital timesheet from a template. Use when the user asks for the next document number, wants to prepare a new timesheet for a project, wants an original scanned timesheet reviewed/corrected, or mentions a project tracking file / running number list. Requires a one-time setup interview on first use (see references/setup.md) to learn the user's folder layout, terminology and rules.
+description: Tracks the next free running document number for a project (two independent sequences - a primary number used on documents, and an optional secondary number for internal-only counting), and processes photographed/scanned handwritten timesheets - computes worked hours, applies a configurable break-time rule, compares against the entered values, produces a red-annotated correction copy for mismatches, and generates a clean digital timesheet from a template. Use when the user asks for the next document number, wants to prepare a new timesheet for a project, wants an original scanned timesheet reviewed/corrected, or mentions a project tracking file / running number list. Requires a one-time setup interview on first use (see references/setup.md) to learn the user's folder layout, terminology and rules.
 ---
 
 # Craft Timesheet Numbering & Correction
@@ -8,17 +8,17 @@ description: Tracks the next free running document number for a project (two ind
 Helps a craft/trade or service business (construction, landscaping, cleaning, any subcontractor-
 based trade) with two related jobs for a project-based file layout:
 
-1. **Numbering** — read a per-project tracking file and determine the next free running document
+1. **Numbering** - read a per-project tracking file and determine the next free running document
    number, in one or two independent numbering sequences.
-2. **Timesheet correction** — read a photographed/scanned handwritten timesheet, compute the
+2. **Timesheet correction** - read a photographed/scanned handwritten timesheet, compute the
    correct worked hours under a break-time rule, compare against what was actually entered, flag
    and visually correct mismatches, and produce a clean digital timesheet.
 
 This skill is **generic and configuration-driven**. Nothing below hardcodes a company name, a
-folder path, or a fixed spreadsheet layout — those live in a config file created during a
+folder path, or a fixed spreadsheet layout - those live in a config file created during a
 one-time setup interview.
 
-## Step 0 — Load or create configuration (always first)
+## Step 0: Load or create configuration (always first)
 
 Before doing anything else, check for the config file:
 
@@ -50,7 +50,7 @@ Required config fields are documented in `references/setup.md` and mirrored in
     ...                                 <- e.g. scanned timesheet photos dropped here
 ```
 
-## Workflow — numbering
+## Workflow: numbering
 
 See [references/numbering.md](references/numbering.md) for the full, detailed workflow:
 finding the project folder, reading the tracking file, locating the master-data block, reading
@@ -60,7 +60,7 @@ what to report back.
 This part is **read-only**: it never writes to the tracking file and never creates a new
 timesheet document by itself. Writing is a separate, explicitly requested step (see below).
 
-## Workflow — timesheet correction
+## Workflow: timesheet correction
 
 See [references/timesheet-processing.md](references/timesheet-processing.md) for the full,
 detailed workflow: finding the original, computing worked hours and breaks, comparing against
@@ -70,7 +70,7 @@ timesheet from the template, exporting to PDF, and updating the tracking file.
 
 This part is **writing**: it creates new files in the project folder and appends an entry to the
 tracking file. Before creating anything, summarize what will be created (filenames, which number
-will be assigned) so the user can follow along — especially if a file with the same name already
+will be assigned) so the user can follow along - especially if a file with the same name already
 exists.
 
 ## Important
@@ -78,4 +78,4 @@ exists.
 - For a pure number lookup: don't write to the tracking file and don't generate a new timesheet
   from the template, as long as only the next number was asked for.
 - When in doubt about format, mapping, or an ambiguous/gapped number sequence: ask rather than
-  guess — these numbers end up on real billing documents.
+  guess - these numbers end up on real billing documents.
