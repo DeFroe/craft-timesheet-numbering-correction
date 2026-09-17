@@ -1,0 +1,42 @@
+{
+  "base_folder": "C:\\Path\\To\\Your\\Projects",
+  "party_a_label": "Client",
+  "party_b_label": "Subcontractor",
+  "internal_party_value": "internal",
+  "secondary_sequence_enabled": true,
+  "tracking_filename_pattern": "Tracking_{project}.xlsx",
+  "project_name_replacements": {
+    ", ": "_"
+  },
+  "break_rules": [
+    { "max_hours": 6.0, "break_hours": 0.0 },
+    { "max_hours": 9.0, "break_hours": 0.5 },
+    { "max_hours": null, "break_hours": 0.75 }
+  ],
+  "template_source": "bundled",
+  "template_path": null,
+  "template_mapping": {
+    "party_a_address_cells": ["A7", "A8", "A9"],
+    "party_b_name_cell": "F7",
+    "project_cell": "C14",
+    "doc_number_cell": "G14",
+    "date_cell": "H14",
+    "data_start_row": 17,
+    "data_end_row": 21,
+    "columns": {
+      "date": "A",
+      "description": "B",
+      "start_time": "D",
+      "end_time": "E",
+      "person_count": "F",
+      "break": "G",
+      "net_hours": "H",
+      "travel_time": "I"
+    },
+    "hours_sum_cell": "H23",
+    "travel_sum_cell": "I23",
+    "total_cell": "H24",
+    "footer_date_cell": "B29"
+  },
+  "doc_filename_pattern": "{party}_Timesheet_{project}_ORIG_zu_{doc_number}"
+}

@@ -1,0 +1,13 @@
+# Local, user-specific config must never be committed (it can contain real folder paths)
+config.json
+
+# Excel lock files
+~$*.xlsx
+
+# Python
+__pycache__/
+*.pyc
+
+# OS cruft
+.DS_Store
+Thumbs.db
