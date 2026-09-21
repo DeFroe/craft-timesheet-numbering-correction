@@ -150,12 +150,14 @@ template typically needs:
   case, where this field instead just gets `config.internal_party_value`).
 - **Project name** (the master-data value from `numbering.md` step 3, typically the project
   folder name itself), document number (the primary number), date.
-- One row per work entry: date, **worker name only, plus an activity description only if the
-  original itself gives one for that row, never a location/site name**, even if the original
-  mentions one elsewhere (a site noted on the original belongs to the project-name field above,
-  not to the per-row description: don't duplicate it into every row); start time, end time, a
-  person-count multiplier (not a name field - if a row is one person, this is 1), break (formula),
-  net hours (formula), travel time.
+- One row per work entry: date, worker name and description, start time, end time, a person-count
+  multiplier (not a name field - if a row is one person, this is 1), break (formula), net hours
+  (formula), travel time.
+- **Don't repeat project-level values in every row**: fill each row's description from what that
+  row itself gives, the worker name and an activity where the original names one. A value that
+  stays constant across the whole sheet, typically the site, belongs in the project-name field,
+  not copied down the description column. Where rows genuinely differ, several sites or objects
+  in one sheet, that difference is exactly what the description column is for.
 - **A break-formula boundary check**: before filling in rows, verify the template's break formula
   uses the same **exclusive** upper-bound convention as `config.break_rules` (`<`, not `<=`, at
   each boundary). Bundled/older templates sometimes get this backwards, which silently
@@ -194,22 +196,24 @@ Save the file in the project folder (filename analogous to the correction copy, 
 Both the correction copy (if created) and the new timesheet get an additional PDF export with
 the **same filename**, just with a `.pdf` extension.
 
-**Image correction copy → PDF: always portrait, image top-centered.** Photos/scans often have a
-landscape pixel grid (e.g. 1644×1080, because the photo was taken sideways) even though the
-timesheet itself is a portrait document. Saving with `Image.open(...).save(pdf_path, "PDF")`
-copies the photo's pixel dimensions straight into the PDF page size, which silently produces a
-landscape page. Instead, always create a fixed portrait page (A4, 595×842 pt) and place the image
-on it **top-centered**, scaled to full page width, with PyMuPDF:
+**Image correction copy → PDF: take the page format from the config, not from the photo.** A
+photo or scan often has a landscape pixel grid (e.g. 1644×1080, because the sheet was shot
+sideways) even when the form itself is a portrait document. Saving with
+`Image.open(...).save(pdf_path, "PDF")` copies those pixel dimensions straight into the PDF page
+size, which silently produces a page in the wrong format. Instead, build a fixed page from
+`config.pdf_page_size` and `config.pdf_page_orientation` (defaulting to A4 portrait when they're
+absent) and place the image on it **top-centered**, scaled to full page width, with PyMuPDF:
 
 ```python
 import fitz
-img = fitz.open(png_path)
-pix = img[0].get_pixmap()
-img_w, img_h = pix.width, pix.height
 
-page_w, page_h = fitz.paper_size("a4")  # portrait: 595 x 842 pt
+page_w, page_h = fitz.paper_size(config.get("pdf_page_size", "a4"))  # "a4" -> 595 x 842 pt
+if config.get("pdf_page_orientation", "portrait") == "landscape":
+    page_w, page_h = page_h, page_w
+
+pix = fitz.open(png_path)[0].get_pixmap()
 draw_w = page_w
-draw_h = draw_w * img_h / img_w
+draw_h = draw_w * pix.height / pix.width
 rect = fitz.Rect(0, 0, draw_w, draw_h)
 
 doc = fitz.open()
@@ -218,8 +222,8 @@ page.insert_image(rect, filename=png_path)
 doc.save(pdf_path)
 ```
 
-Render the result and check page size/placement before reporting the file as done; a save that
-didn't error is not by itself evidence that the orientation came out right.
+Render the result and check page size and placement before reporting the file as done; a save
+that didn't error is not by itself evidence that the page came out in the right format.
 
 **Timesheet (XLSX) → PDF**: requires Excel COM automation (`pywin32`). **Known limitation**: in a
 sandboxed/agent shell environment on Windows, COM activation of Excel can fail entirely

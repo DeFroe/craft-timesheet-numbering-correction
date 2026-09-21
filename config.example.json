@@ -38,5 +38,7 @@
     "total_cell": "H24",
     "footer_date_cell": "B29"
   },
+  "pdf_page_size": "a4",
+  "pdf_page_orientation": "portrait",
   "doc_filename_pattern": "{party}_Timesheet_{project}_ORIG_zu_{doc_number}"
 }

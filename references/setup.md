@@ -38,6 +38,9 @@ call), then free-text follow-ups depending on the answers.
   bound on each tier (i.e. "up to but not including this many hours") - this is deliberate: it
   avoids an off-by-one at exact boundary values, which is a real mistake this skill's design
   history is based on.
+- Page size and orientation of the timesheet form, used for PDF exports (default suggestion: A4
+  portrait; outside A4 regions this is usually Letter, and wide many-column forms are sometimes
+  landscape).
 - Filename pattern for generated documents, with placeholders `{party}`, `{project}`,
   `{doc_number}` (default suggestion:
   `{party}_Timesheet_{project}_ORIG_zu_{doc_number}`).
@@ -71,6 +74,8 @@ See `config.example.json` in the skill root for a filled-out example. Fields:
 | `template_source` | `"bundled"` \| `"custom"` | Which timesheet template to use. |
 | `template_path` | string (if `custom`) | Path to the user's own template. |
 | `template_mapping` | object | Cell coordinates for the fields the workflow needs to fill (see `references/timesheet-processing.md` for the field list). |
+| `pdf_page_size` | string, optional | Page format for PDF exports, as accepted by `fitz.paper_size` (e.g. `"a4"`, `"letter"`). Defaults to `"a4"`. |
+| `pdf_page_orientation` | `"portrait"` \| `"landscape"`, optional | Orientation of the timesheet form. Defaults to `"portrait"`. |
 | `doc_filename_pattern` | string | Pattern with `{party}`, `{project}`, `{doc_number}` placeholders. |
 
 ## Re-running setup
