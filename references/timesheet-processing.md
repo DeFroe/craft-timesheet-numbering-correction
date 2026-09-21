@@ -79,6 +79,13 @@ Example row (original wrongly shows 1.00 h break instead of the correct 0.50 h):
 (`[-0.50]` and `[8.00]` in red, `-1.00` struck through in red; `~~..~~` here is just a
 placeholder for "struck through", not literal Markdown in the target document.)
 
+**Correct the total too:** if the original has a daily/weekly total at the bottom that changes
+because of one or more row corrections, treat it the same way as the row corrections: correct
+total in red, in square brackets, next to the wrong original total, with the wrong value struck
+through in red. Don't correct only the individual rows and leave a now-inconsistent total
+untouched: the user should be able to see the correct bottom-line result at a glance without
+re-adding the rows themselves. Skip this if the original has no total field.
+
 **Implementation:**
 - Image files: Python with Pillow (`PIL.ImageDraw`) - draw red text and a red line.
 - PDF files: Python with PyMuPDF (`fitz`) - draw red annotations/freehand lines.
@@ -141,10 +148,14 @@ template typically needs:
 - Party A address block.
 - Party B name (name only - no address, even if one is on file - unless it's the internal-staff
   case, where this field instead just gets `config.internal_party_value`).
-- Project name, document number (the primary number), date.
-- One row per work entry: date, description/worker name, start time, end time, a person-count
-  multiplier (not a name field - if a row is one person, this is 1), break (formula), net hours
-  (formula), travel time.
+- **Project name** (the master-data value from `numbering.md` step 3, typically the project
+  folder name itself), document number (the primary number), date.
+- One row per work entry: date, **worker name only, plus an activity description only if the
+  original itself gives one for that row, never a location/site name**, even if the original
+  mentions one elsewhere (a site noted on the original belongs to the project-name field above,
+  not to the per-row description: don't duplicate it into every row); start time, end time, a
+  person-count multiplier (not a name field - if a row is one person, this is 1), break (formula),
+  net hours (formula), travel time.
 - **A break-formula boundary check**: before filling in rows, verify the template's break formula
   uses the same **exclusive** upper-bound convention as `config.break_rules` (`<`, not `<=`, at
   each boundary). Bundled/older templates sometimes get this backwards, which silently
@@ -183,12 +194,32 @@ Save the file in the project folder (filename analogous to the correction copy, 
 Both the correction copy (if created) and the new timesheet get an additional PDF export with
 the **same filename**, just with a `.pdf` extension.
 
-**Image correction copy → PDF**: direct and reliable with Pillow, no external programs needed:
+**Image correction copy → PDF: always portrait, image top-centered.** Photos/scans often have a
+landscape pixel grid (e.g. 1644×1080, because the photo was taken sideways) even though the
+timesheet itself is a portrait document. Saving with `Image.open(...).save(pdf_path, "PDF")`
+copies the photo's pixel dimensions straight into the PDF page size, which silently produces a
+landscape page. Instead, always create a fixed portrait page (A4, 595×842 pt) and place the image
+on it **top-centered**, scaled to full page width, with PyMuPDF:
 
 ```python
-from PIL import Image
-Image.open(png_path).convert("RGB").save(pdf_path, "PDF")
+import fitz
+img = fitz.open(png_path)
+pix = img[0].get_pixmap()
+img_w, img_h = pix.width, pix.height
+
+page_w, page_h = fitz.paper_size("a4")  # portrait: 595 x 842 pt
+draw_w = page_w
+draw_h = draw_w * img_h / img_w
+rect = fitz.Rect(0, 0, draw_w, draw_h)
+
+doc = fitz.open()
+page = doc.new_page(width=page_w, height=page_h)
+page.insert_image(rect, filename=png_path)
+doc.save(pdf_path)
 ```
+
+Render the result and check page size/placement before reporting the file as done; a save that
+didn't error is not by itself evidence that the orientation came out right.
 
 **Timesheet (XLSX) → PDF**: requires Excel COM automation (`pywin32`). **Known limitation**: in a
 sandboxed/agent shell environment on Windows, COM activation of Excel can fail entirely
